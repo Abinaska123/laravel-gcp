@@ -1,0 +1,32 @@
+# Use the official PHP image as the base image
+FROM php:7.4-apache
+
+# Set the working directory in the container
+WORKDIR /var/www/html
+
+# Install dependencies
+RUN apt-get update && \
+    apt-get install -y \
+        libzip-dev \
+        unzip \
+        git \
+        && docker-php-ext-install zip
+#superuser for composer
+ENV COMPOSER_ALLOW_SUPERUSER=1
+
+# Install Composer globally
+RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer
+
+# Copy the composer files and install dependencies
+COPY composer.json composer.lock ./
+RUN composer install --no-scripts --no-autoloader
+
+# Generate the optimized autoload files
+RUN composer dump-autoload --optimize
+
+
+# Expose port 80 for the Apache server
+EXPOSE 80
+
+# Start Apache when the container starts
+CMD ["apache2-foreground"]
