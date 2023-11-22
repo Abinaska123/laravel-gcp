@@ -1,26 +1,18 @@
 steps:
-  # Docker Build
-  - name: 'gcr.io/cloud-builders/docker'
-    args: ['build', '-t',
-           'us-central1-docker.pkg.dev/abinas-test-server/cloud-run-source-deploy/laravel-gcp/laravel',
-           '.']
-
-  # Docker Push
-  - name: 'gcr.io/cloud-builders/docker'
-    args: ['push',
-           'us-central1-docker.pkg.dev/abinas-test-server/cloud-run-source-deploy/laravel-gcp/laravel']
-
-  # Create Compute Engine instance with the specified Docker image
-  - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
-    entrypoint: 'gcloud'
-    timeout: 600s  # Increased timeout to allow for instance creation
-    args:
-      - 'compute'
-      - 'instances'
-      - 'create-with-container'
-      - 'my-vm-name'
-      - '--container-image=us-central1-docker.pkg.dev/abinas-test-server/cloud-run-source-deploy/laravel-gcp/laravel'
-      - '--container-env=PORT=8000'
-      - '--tags=http-server,https-server'
-      - '--zone=us-central1-a'
+# Build the container image
+- name: 'gcr.io/cloud-builders/docker'
+#specify the name of the image
+  args: ['build', '-t', 'gcr.io/$abinas-test-server/cb4a60f28246f', '.']
+# Push the container image to Container Registry
+- name: 'gcr.io/cloud-builders/docker'
+  args: ['push', 'gcr.io/$abinas-test-server/cb4a60f28246f']
+# Deploy container image to Cloud Run
+- name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
+  entrypoint: gcloud
+#specify the service name and the region
+  args: ['run', 'deploy', 'laravel', '--image', 'gcr.io/$abinas-test-server/cb4a60f28246f', '--region', 'us-central1',         
+        "--platform", "managed",
+        "--port", "8000"]
+images:
+- gcr.io/$abinas-test-server/cb4a60f28246f
 
