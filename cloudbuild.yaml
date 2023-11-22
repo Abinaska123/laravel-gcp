@@ -1,23 +1,26 @@
 steps:
   # Docker Build
   - name: 'gcr.io/cloud-builders/docker'
-    args: ['build', '-t', 
-           'us-central1-docker.pkg.dev/abinas-test-server/cloud-run-source-deploy/laravel-gcp/laravel', 
+    args: ['build', '-t',
+           'us-central1-docker.pkg.dev/abinas-test-server/cloud-run-source-deploy/laravel-gcp/laravel',
            '.']
 
   # Docker Push
   - name: 'gcr.io/cloud-builders/docker'
-    args: ['push', 
+    args: ['push',
            'us-central1-docker.pkg.dev/abinas-test-server/cloud-run-source-deploy/laravel-gcp/laravel']
 
   # Entrypoint, timeout and environment variables
   - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
     entrypoint: 'gcloud'
     timeout: 240s
-    args: ['compute', 'instances', 
-           'create-with-container', 'my-vm-name',
-           '--container-image', 
-           'us-central1-docker.pkg.dev/abinas-test-server/cloud-run-source-deploy/laravel-gcp/laravel']
-    env:
-      - 'CLOUDSDK_COMPUTE_REGION=us-central1'
-      - 'CLOUDSDK_COMPUTE_ZONE=us-central1-a'
+    args:
+      - 'compute'
+      - 'instances'
+      - 'create-with-container'
+      - 'my-vm-name'
+      - '--container-image=us-central1-docker.pkg.dev/abinas-test-server/cloud-run-source-deploy/laravel-gcp/laravel'
+      - '--container-env=PORT=8000'  # Set the environment variable for the port
+      - '--tags=http-server,https-server'
+      - '--zone=us-central1-a'
+
