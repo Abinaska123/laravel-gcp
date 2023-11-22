@@ -10,17 +10,17 @@ steps:
     args: ['push',
            'us-central1-docker.pkg.dev/abinas-test-server/cloud-run-source-deploy/laravel-gcp/laravel']
 
-  # Entrypoint, timeout and environment variables
+  # Create Compute Engine instance with the specified Docker image
   - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
     entrypoint: 'gcloud'
-    timeout: 240s
+    timeout: 600s  # Increased timeout to allow for instance creation
     args:
       - 'compute'
       - 'instances'
       - 'create-with-container'
       - 'my-vm-name'
       - '--container-image=us-central1-docker.pkg.dev/abinas-test-server/cloud-run-source-deploy/laravel-gcp/laravel'
-      - '--container-env=PORT=8000'  # Set the environment variable for the port
+      - '--container-env=PORT=8000'
       - '--tags=http-server,https-server'
       - '--zone=us-central1-a'
 
