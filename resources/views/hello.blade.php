@@ -1,6 +1,6 @@
 <html>
   <body>
-    <h1>/The app works perfect/</h1>
+    <h1>/Made chaneg from november 24/</h1>
     <p>{{ $message }}</p>
   </body>
 </html>
